@@ -1,0 +1,28 @@
+type Organism {
+  id: ID!
+  genus: String!
+  species: String!
+  commonName: String
+}
+
+type Gene {
+  id: ID!
+  name: String!
+  description: String
+  orgnaism: String!
+  geneFamily: String
+}
+
+type GeneFamily {
+  id: ID!
+  name: String!
+  description: String
+}
+
+type Query {
+  genes(start: Int, size: Int): [Gene]
+  getGene(id: ID!): Gene
+  organisms(start: Int, size: Int): [Organism]
+  geneFamilies(start: Int, size: Int): [GeneFamily]
+  getGeneFamily(id: ID!): GeneFamily
+}
