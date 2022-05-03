@@ -35,7 +35,7 @@ const intermineGeneAttributes = [
   'Gene.name',
   'Gene.description',
   'Gene.organism.name',
-  'Gene.geneFamily.identifier',
+  'Gene.geneFamily.id',
 ];
 
 
@@ -45,7 +45,7 @@ const graphqlGeneAttributes = [
   'name',
   'description',
   'organism',
-  'geneFamily',
+  'geneFamilyId',
 ];
 
 
@@ -68,7 +68,6 @@ const graphqlGeneFamilyAttributes = [
   'id',
   'name',
   'description',
-  'genes',
 ];
 
 
@@ -86,9 +85,14 @@ class IntermineAPI extends RESTDataSource {
   }
 
   // get an ordered, paginated list of genes
-  async getGenes(start=0, size=10) {
+  async getGenes({family, start=0, size=10}={}) {
     const sortBy = 'Gene.name';
-    const query = interminePathQuery(intermineGeneAttributes, sortBy);
+    const constraints = [];
+    if (family !== undefined) {
+      const familyConstraint = intermineConstraint('Gene.geneFamily.id', '=', family)
+      constraints.push(familyConstraint);
+    }
+    const query = interminePathQuery(intermineGeneAttributes, sortBy, constraints);
     const params = {query, start, size, format: 'json'};
     return this.get('query/results', params).then(response2genes);
   }
@@ -96,7 +100,7 @@ class IntermineAPI extends RESTDataSource {
   // get a gene by ID
   async getGene(id) {
       const sortBy = 'Gene.name';
-      const constraints = [intermineConstraint('Gene.id', '=', id)];
+      const constraints = [intermineConstraint('Gene.identifier', '=', id)];
       const query = interminePathQuery(intermineGeneAttributes, sortBy, constraints);
       const params = {query, format: 'json'};
       return this.get('query/results', params)
@@ -120,7 +124,7 @@ class IntermineAPI extends RESTDataSource {
 
   // get a gene family by ID
   async getGeneFamily(id) {
-      const sortBy = 'Gene.name';
+      const sortBy = 'GeneFamily.identifier';
       const constraints = [intermineConstraint('GeneFamily.id', '=', id)];
       const query = interminePathQuery(intermineGeneFamilyAttributes, sortBy, constraints);
       const params = {query, format: 'json'};

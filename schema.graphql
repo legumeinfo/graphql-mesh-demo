@@ -7,22 +7,22 @@ type Organism {
 
 type Gene {
   id: ID!
-  name: String!
+  name: String
   description: String
   orgnaism: String!
-  geneFamily: String
+  geneFamily: GeneFamily
 }
 
 type GeneFamily {
   id: ID!
   name: String!
   description: String
+  genes: [Gene!]
 }
 
 type Query {
-  genes(start: Int, size: Int): [Gene]
-  getGene(id: ID!): Gene
-  organisms(start: Int, size: Int): [Organism]
+  genes(family: ID, start: Int, size: Int): [Gene]
+  gene(id: ID!): Gene
   geneFamilies(start: Int, size: Int): [GeneFamily]
-  getGeneFamily(id: ID!): GeneFamily
+  geneFamily(id: ID!): GeneFamily
 }

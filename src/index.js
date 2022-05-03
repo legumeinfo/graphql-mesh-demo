@@ -3,7 +3,6 @@ const { GraphQLFileLoader } = require("@graphql-tools/graphql-file-loader");
 const { loadSchemaSync } = require("@graphql-tools/load");
 const { ApolloServer } = require('apollo-server');
 // local
-//const { typeDefs } = require('./schema.js');
 const { resolvers } = require('./resolvers.js');
 const { dataSources } = require('./data-sources');
 
