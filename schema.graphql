@@ -1,15 +1,18 @@
 type Organism {
   id: ID!
+  name: String
+  commonName: String
+  description: String
   genus: String!
   species: String!
-  commonName: String
+  genes: [Gene!]
 }
 
 type Gene {
   id: ID!
   name: String
   description: String
-  orgnaism: String!
+  organism: Organism!
   geneFamily: GeneFamily
 }
 
@@ -21,6 +24,8 @@ type GeneFamily {
 }
 
 type Query {
+  organisms(genus: String, start: Int, size: Int): [Organism]
+  organism(id: ID!): Organism
   genes(family: ID, start: Int, size: Int): [Gene]
   gene(id: ID!): Gene
   geneFamilies(start: Int, size: Int): [GeneFamily]

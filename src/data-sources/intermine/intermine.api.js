@@ -30,11 +30,39 @@ function response2graphqlObjects(response, graphqlAttributes) {
 
 
 // the attributes of a Gene in InterMine
+const intermineOrganismAttributes = [
+  'Organism.id',
+  'Organism.name',
+  'Organism.commonName',
+  'Organism.description',
+  'Organism.genus',
+  'Organism.species',
+];
+
+
+// the attributes of a Gene in the GraphQL API
+const graphqlOrganismAttributes = [
+  'id',
+  'name',
+  'commonName',
+  'description',
+  'genus',
+  'species',
+];
+
+
+// converts an Intermine response into an array of GraphQL Gene objects
+function response2organisms(response) {
+  return response2graphqlObjects(response, graphqlOrganismAttributes);
+}
+
+
+// the attributes of a Gene in InterMine
 const intermineGeneAttributes = [
   'Gene.id',
   'Gene.name',
   'Gene.description',
-  'Gene.organism.name',
+  'Gene.organism.id',
   'Gene.geneFamily.id',
 ];
 
@@ -44,7 +72,7 @@ const graphqlGeneAttributes = [
   'id',
   'name',
   'description',
-  'organism',
+  'organismId',
   'geneFamilyId',
 ];
 
@@ -84,10 +112,44 @@ class IntermineAPI extends RESTDataSource {
       this.baseURL = baseURL;
   }
 
+  // get an ordered, paginated list of organisms
+  async getOrganisms({genus, start=0, size=10}={}) {
+    const sortBy = 'Organism.name';
+    const constraints = [];
+    if (genus !== undefined) {
+      const genusConstraint = intermineConstraint('Organism.genus', '=', genus)
+      constraints.push(genusConstraint);
+    }
+    const query = interminePathQuery(intermineOrganismAttributes, sortBy, constraints);
+    const params = {query, start, size, format: 'json'};
+    return this.get('query/results', params).then(response2organisms);
+  }
+
+  // get an organism by ID
+  async getOrganism(id) {
+      const sortBy = 'Organism.name';
+      const constraints = [intermineConstraint('Organism.id', '=', id)];
+      const query = interminePathQuery(intermineOrganismAttributes, sortBy, constraints);
+      const params = {query, format: 'json'};
+      return this.get('query/results', params)
+        .then(response2organisms)
+        .then((organisms) => {
+          if (!organisms.length) {
+            const msg = `Organism with ID '${id}' not found`;
+            throw new UserInputError(msg);
+          }
+          return organisms[0];
+        });
+  }
+
   // get an ordered, paginated list of genes
-  async getGenes({family, start=0, size=10}={}) {
+  async getGenes({organism, family, start=0, size=10}={}) {
     const sortBy = 'Gene.name';
     const constraints = [];
+    if (organism !== undefined) {
+      const organismConstraint = intermineConstraint('Gene.organism.id', '=', organism)
+      constraints.push(organismConstraint);
+    }
     if (family !== undefined) {
       const familyConstraint = intermineConstraint('Gene.geneFamily.id', '=', family)
       constraints.push(familyConstraint);
