@@ -143,7 +143,7 @@ class IntermineAPI extends RESTDataSource {
   }
 
   // get an ordered, paginated list of genes
-  async getGenes({organism, family, start=0, size=10}={}) {
+  async getGenes(organism=undefined, family=undefined, start=0, size=10) {
     const sortBy = 'Gene.name';
     const constraints = [];
     if (organism !== undefined) {
