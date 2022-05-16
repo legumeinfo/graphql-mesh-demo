@@ -5,7 +5,7 @@ type Organism {
   description: String
   genus: String!
   species: String!
-  genes: [Gene!]
+  genes(family: ID, start: Int, size: Int): [Gene!]
 }
 
 type Gene {
@@ -20,7 +20,7 @@ type GeneFamily {
   id: ID!
   name: String!
   description: String
-  genes: [Gene!]
+  genes(organism: ID, start: Int, size: Int): [Gene!]
 }
 
 type Query {

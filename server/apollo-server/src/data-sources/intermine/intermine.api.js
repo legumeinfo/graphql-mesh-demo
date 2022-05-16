@@ -116,7 +116,7 @@ class IntermineAPI extends RESTDataSource {
   async getOrganisms({genus, start=0, size=10}={}) {
     const sortBy = 'Organism.name';
     const constraints = [];
-    if (genus !== undefined) {
+    if (genus) {
       const genusConstraint = intermineConstraint('Organism.genus', '=', genus)
       constraints.push(genusConstraint);
     }
@@ -146,11 +146,11 @@ class IntermineAPI extends RESTDataSource {
   async getGenes({organism, family, start=0, size=10}={}) {
     const sortBy = 'Gene.name';
     const constraints = [];
-    if (organism !== undefined) {
+    if (organism) {
       const organismConstraint = intermineConstraint('Gene.organism.id', '=', organism)
       constraints.push(organismConstraint);
     }
-    if (family !== undefined) {
+    if (family) {
       const familyConstraint = intermineConstraint('Gene.geneFamily.id', '=', family)
       constraints.push(familyConstraint);
     }
