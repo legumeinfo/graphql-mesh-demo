@@ -12,8 +12,8 @@ const resolvers = {
     },
 
     // gene API
-    genes: async (_source, { family, start, size }, { dataSources }) => {
-      return dataSources.legumemineAPI.getGenes({family, start, size});
+    genes: async (_source, { organism, family, start, size }, { dataSources }) => {
+      return dataSources.legumemineAPI.getGenes({organism, family, start, size});
     },
     gene: async (_source, { id }, { dataSources }) => {
       return dataSources.legumemineAPI.getGene(id);
@@ -30,9 +30,9 @@ const resolvers = {
 
   // organism attribute resolvers
   Organism: {
-    genes: async (gene, { }, { dataSources }) => {
-      const organism = gene.organismId;
-      return dataSources.legumemineAPI.getGenes({organism});
+    genes: async (organism, { }, { dataSources }) => {
+      const organism_id = organism.id;
+      return dataSources.legumemineAPI.getGenes({organism: organism_id});
     },
   },
 
@@ -49,8 +49,8 @@ const resolvers = {
   // gene family attribute resolvers
   GeneFamily: {
     genes: async (geneFamily, { }, { dataSources }) => {
-      const family = geneFamily.id;
-      return dataSources.legumemineAPI.getGenes({family});
+      const family_id = geneFamily.id;
+      return dataSources.legumemineAPI.getGenes({family:family_id});
     },
   },
 };
