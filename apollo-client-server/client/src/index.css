@@ -1,0 +1,72 @@
+body {
+    margin: auto;
+    padding: 10px;
+    width: 1000px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                 sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+                 monospace;
+}
+
+.gene {
+    border: 1px solid gray;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.gwas {
+    border: 1px solid gray;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.genefamily {
+    border: 1px solid green;
+    background: lightgray;
+    padding: 10px;
+    margin: 5px 0;
+}
+
+.location {
+    margin: 5px 0;
+}
+
+.minelink {
+    color: darkgreen;
+    width: fit-content;
+    padding: 5px 0;
+}
+
+.minelink a {
+    color: darkgreen;
+    font-weight: bold;
+}
+
+.publication {
+    background: lightgray;
+    padding: 10px;
+    margin: 5px 0;
+}
+
+.publication .title {
+    font-style: italic;
+    padding: 5px 0;
+}
+
+.publication .citation {
+}
+
+.publication .link {
+    padding: 5px 0;
+}
+
+.publication a {
+    color: darkred;
+}
+
