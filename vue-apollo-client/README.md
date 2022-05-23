@@ -1,7 +1,7 @@
 # vue-apollo-client
 
-This is a simple vue Apollo GraphQL client that requires that the Apollo GraphQL server under #apollo-client-server be running on localhost:4000.
-(Presumably any GraphQL server would be fine, that's just the one I've written.)
+This is a simple Vue Apollo GraphQL client that requires that the Apollo GraphQL server under [apollo-client-server](/apollo-client-server)
+be running on localhost:4000.
 
 It runs the `genes` query and dumps them out on localhost:8080.
 
