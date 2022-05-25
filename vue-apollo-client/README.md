@@ -5,6 +5,9 @@ be running on localhost:4000.
 
 It runs the `genes` query and dumps them out on localhost:8080.
 
+Compare to the React code under [react-apollo-client](/react-apollo-client).
+
+
 ## Project setup
 ```
 npm install

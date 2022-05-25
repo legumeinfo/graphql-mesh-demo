@@ -24,7 +24,7 @@ export default {
 </script>
 
 <template>
-  <h1>Here be some genes</h1>
+  <h1>Here be some genes (Vue.js)</h1>
   <div v-if="loading">Loading...</div>
   <div v-else-if="error">Error: {{ error.message }}</div>
   <ul v-if="result && result.genes">
