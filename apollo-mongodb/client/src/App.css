@@ -1,0 +1,25 @@
+.App {
+}
+
+.App button {
+    margin: 5px;
+}
+
+.readme {
+    border-top: 1px solid gray;
+    padding: 10px;
+}
+
+.synopsis {
+    font-style: italic;
+}
+
+.publication {
+    background-color: lightgray;
+    padding: 10px;
+    border: 1px solid gray;
+}
+
+.publication .title {
+    font-style: italic;
+}
