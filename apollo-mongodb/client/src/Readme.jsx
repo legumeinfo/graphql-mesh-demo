@@ -1,32 +1,47 @@
+import { useQuery } from "@apollo/client";
+
+import { GET_README } from './queries';
+
 import { Publication } from './Publication';
 
 export function Readme({ readme }) {
+    const { loading, error, data } = useQuery(GET_README, {
+        variables: { identifier: readme.identifier },
+    });
+    if (loading) return <p>Loading { readme.identifier } ...</p>;
+    if (error) return <p>{error.message}</p>;
     return (
         <div>
-            <div>{readme.description}</div>
-            <div>{readme.provenance}</div>
-            <div>{readme.source}</div>
-            <div>{readme.related_to}</div>
-            <div>{readme.scientific_name}</div>
-            <div>{readme.taxid}</div>
-            <div>{readme.scientific_name_abbrev}</div>
-            <div>{readme.genotype}</div>
-            <div>{readme.bioproject}</div>
-            <div>{readme.sraproject}</div>
-            <div>{readme.dataset_doi}</div>
-            <div>{readme.genbank_accession}</div>
-            <div>{readme.original_file_creation_date}</div>
-            <div>{readme.local_file_creation_date}</div>
-            <div>{readme.dataset_release_date}</div>
-            <div>{readme.data_curators}</div>
-            <div>{readme.public_access_level}</div>
-            <div>{readme.license}</div>
-            <div>{readme.keywords}</div>
-            <div>{readme.genotyping_platform}</div>
-            <div>{readme.genotyping_method}</div>
-            <div>{readme.expression_unit}</div>
-            <div>{readme.geoseries}</div>
-            <Publication readme={readme} />
+            {data.readmesByIdentifier.map(readme => (
+                <div className="readme">
+                    <div className="description">{readme.description}</div>
+                    <ul>
+                        <li>{readme.provenance}</li>
+                        <li>{readme.source}</li>
+                        <li>{readme.related_to}</li>
+                        <li>{readme.scientific_name}</li>
+                        <li>{readme.taxid}</li>
+                        <li>{readme.scientific_name_abbrev}</li>
+                        <li>{readme.genotype}</li>
+                        <li>{readme.bioproject}</li>
+                        <li>{readme.sraproject}</li>
+                        <li>{readme.dataset_doi}</li>
+                        <li>{readme.genbank_accession}</li>
+                        <li>{readme.original_file_creation_date}</li>
+                        <li>{readme.local_file_creation_date}</li>
+                        <li>{readme.dataset_release_date}</li>
+                        <li>{readme.data_curators}</li>
+                        <li>{readme.public_access_level}</li>
+                        <li>{readme.license}</li>
+                        <li>{readme.keywords}</li>
+                        <li>{readme.genotyping_platform}</li>
+                        <li>{readme.genotyping_method}</li>
+                        <li>{readme.expression_unit}</li>
+                        <li>{readme.geoseries}</li>
+                    </ul>
+                    <Publication readme={readme} />
+                </div>
+            ))}
         </div>
     );
 }

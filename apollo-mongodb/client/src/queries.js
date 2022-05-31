@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
-export const GET_READMES = gql`
-query GetReadmes($gensp: String!) {
-  readmesByGensp(gensp: $gensp) {
+export const GET_README = gql`
+query GetReadme($identifier: ID!) {
+  readmesByIdentifier(identifier: $identifier) {
     identifier
     provenance
     source
@@ -32,6 +32,15 @@ query GetReadmes($gensp: String!) {
     genotyping_method
     expression_unit
     geoseries
+  }
+}
+`;
+
+export const GET_SYNOPSES = gql`
+query GetFullReadmes($gensp: String!) {
+  readmesByGensp(gensp: $gensp) {
+    identifier
+    synopsis
   }
 }
 `;

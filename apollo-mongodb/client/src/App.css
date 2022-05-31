@@ -6,12 +6,19 @@
 }
 
 .readme {
-    border-top: 1px solid gray;
-    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.identifier {
+    font-weight: bold;
 }
 
 .synopsis {
     font-style: italic;
+}
+
+.description {
+    margin: 5px 0;
 }
 
 .publication {
@@ -20,6 +27,20 @@
     border: 1px solid gray;
 }
 
-.publication .title {
+.title {
+    font-weight: bold;
     font-style: italic;
+    padding: 5px 0;
+}
+
+.contributors {
+    padding: 5px 0;
+}
+
+.citation {
+    padding: 5px 0;
+}
+
+.doi {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
