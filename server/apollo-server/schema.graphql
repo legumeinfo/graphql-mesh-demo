@@ -24,7 +24,7 @@ type GeneFamily {
 }
 
 type Query {
-  organisms(genus: String, start: Int, size: Int): [Organism]
+  organisms(genus: String, species: String, start: Int, size: Int): [Organism]
   organism(id: ID!): Organism
   genes(organism: ID, family: ID, start: Int, size: Int): [Gene]
   gene(id: ID!): Gene
