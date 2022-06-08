@@ -19,17 +19,40 @@ function interminePathQuery(viewAttributes, sortBy, constraints=[]) {
 // converts an InterMine result array into a GraphQL type
 function result2graphqlObject(result, graphqlAttributes) {
   const entries = graphqlAttributes.map((e, i) => [e, result[i]]);
+  //console.log(entries)
   return Object.fromEntries(entries);
 }
 
 
 // converts an Intermine response into an array of GraphQL types
 function response2graphqlObjects(response, graphqlAttributes) {
-  return response.results.map((result) => result2graphqlObject(result, graphqlAttributes));
+  return consolidate(response.results.map((result) => result2graphqlObject(result, graphqlAttributes)));
+}
+
+//HACK:
+// finds duplicates and merges 
+function consolidate(possibly_duplicated_obj_list) {
+    const lookup = new Map();
+    for (const obj of possibly_duplicated_obj_list) {
+        urobj = lookup.get(obj.id);
+        if (urobj) {
+            //HACK:
+            if (obj.hasOwnProperty('proteinDomains')) {
+                urobj.proteinDomains.push({name: obj.proteinDomains});
+            }
+        }
+        else {
+            if (obj.hasOwnProperty('proteinDomains')) {
+                obj.proteinDomains = [{name : obj.proteinDomains}];
+            }
+            lookup.set(obj.id, obj);
+        }
+    }
+    return Array.from(lookup.values());
 }
 
 
-// the attributes of a Gene in InterMine
+// the attributes of an Organism in InterMine
 const intermineOrganismAttributes = [
   'Organism.id',
   'Organism.name',
@@ -40,7 +63,7 @@ const intermineOrganismAttributes = [
 ];
 
 
-// the attributes of a Gene in the GraphQL API
+// the attributes of an Organism in the GraphQL API
 const graphqlOrganismAttributes = [
   'id',
   'name',
@@ -51,9 +74,30 @@ const graphqlOrganismAttributes = [
 ];
 
 
-// converts an Intermine response into an array of GraphQL Gene objects
+// converts an Intermine response into an array of GraphQL Organism objects
 function response2organisms(response) {
   return response2graphqlObjects(response, graphqlOrganismAttributes);
+}
+
+// the attributes of an Strain in InterMine
+const intermineStrainAttributes = [
+  'Strain.id',
+  'Strain.name',
+  'Strain.accession',
+];
+
+
+// the attributes of an Strain in the GraphQL API
+const graphqlStrainAttributes = [
+  'id',
+  'name',
+  'accession',
+];
+
+
+// converts an Intermine response into an array of GraphQL Strain objects
+function response2strains(response) {
+  return response2graphqlObjects(response, graphqlStrainAttributes);
 }
 
 
@@ -62,8 +106,11 @@ const intermineGeneAttributes = [
   'Gene.id',
   'Gene.name',
   'Gene.description',
-  'Gene.organism.id',
-  'Gene.geneFamily.id',
+  'Gene.strain.id',
+  'Gene.assemblyVersion',
+  //'Gene.geneFamily.id',
+  'Gene.proteinDomains.name',
+  //'Gene.proteinDomains.accession',
 ];
 
 
@@ -72,14 +119,38 @@ const graphqlGeneAttributes = [
   'id',
   'name',
   'description',
-  'organismId',
-  'geneFamilyId',
+  'strainId',
+  'genome',
+  'proteinDomains',
 ];
 
 
 // converts an Intermine response into an array of GraphQL Gene objects
 function response2genes(response) {
+  console.log(response);
   return response2graphqlObjects(response, graphqlGeneAttributes);
+}
+
+// the attributes of a ProteinDomain in InterMine
+const intermineProteinDomainAttributes = [
+  'ProteinDomain.id',
+  'ProteinDomain.identifier',
+  'ProteinDomain.name',
+  'ProteinDomain.description',
+];
+
+// the attributes of a ProteinDomain in the GraphQL API
+const graphqlProteinDomainAttributes = [
+  'id',
+  'accession',
+  'name',
+  'description',
+];
+
+
+// converts an Intermine response into an array of GraphQL ProteinDomain objects
+function response2proteindomains(response) {
+  return response2graphqlObjects(response, graphqlProteinDomainAttributes);
 }
 
 
@@ -142,17 +213,66 @@ class IntermineAPI extends RESTDataSource {
         });
   }
 
-  // get an ordered, paginated list of genes
-  async getGenes({organism, family, start=0, size=10}={}) {
-    const sortBy = 'Gene.name';
+  // get an ordered, paginated list of strains
+  async getStrains({organism, start=0, size=10}={}) {
+    const sortBy = 'Strain.name';
     const constraints = [];
     if (organism) {
-      const organismConstraint = intermineConstraint('Gene.organism.id', '=', organism)
+      const organismConstraint = intermineConstraint('Strain.organism.id', '=', organism)
       constraints.push(organismConstraint);
     }
+    const query = interminePathQuery(intermineStrainAttributes, sortBy, constraints);
+    const params = {query, start, size, format: 'json'};
+    return this.get('query/results', params).then(response2strains);
+  }
+
+  // get a strain by ID
+  async getStrain(id) {
+      const sortBy = 'Strain.name';
+      const constraints = [intermineConstraint('Strain.id', '=', id)];
+      const query = interminePathQuery(intermineStrainAttributes, sortBy, constraints);
+      //console.log(query);
+      const params = {query, format: 'json'};
+      return this.get('query/results', params)
+        .then(response2strains)
+        .then((strains) => {
+          if (!strains.length) {
+            const msg = `Strain with ID '${id}' not found`;
+            throw new UserInputError(msg);
+          }
+          return strains[0];
+        });
+  }
+
+  // get an ordered, paginated list of ProteinDomains
+  async getProteinDomains({gene, start=0, size=10}={}) {
+    const sortBy = 'ProteinDomain.name';
+    const constraints = [];
+    //if (gene) {
+      //const geneConstraint = intermineConstraint('Strain.organism.id', '=', gene)
+      //constraints.push(geneConstraint);
+    //}
+    const query = interminePathQuery(intermineProteinDomainAttributes, sortBy, constraints);
+    const params = {query, start, size, format: 'json'};
+    return this.get('query/results', params).then(response2proteindomains);
+  }
+
+
+  // get an ordered, paginated list of genes
+  async getGenes({strain, family, description, start=0, size=10}={}) {
+    const sortBy = 'Gene.name';
+    const constraints = [];
+    if (strain) {
+      const strainConstraint = intermineConstraint('Gene.strain.name', '=', strain)
+      constraints.push(strainConstraint);
+    }
     if (family) {
-      const familyConstraint = intermineConstraint('Gene.geneFamily.id', '=', family)
+      const familyConstraint = intermineConstraint('Gene.geneFamily.identifier', '=', family)
       constraints.push(familyConstraint);
+    }
+    if (description) {
+      const descriptionConstraint = intermineConstraint('Gene.description', 'CONTAINS', description)
+      constraints.push(descriptionConstraint);
     }
     const query = interminePathQuery(intermineGeneAttributes, sortBy, constraints);
     const params = {query, start, size, format: 'json'};
