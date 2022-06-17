@@ -1,0 +1,11 @@
+/node_modules/
+/lib/
+/test/
+custom-elements.json
+# top level source
+gene-list-element.js
+gene-list-element.js.map
+gene-list-element.d.ts
+gene-list-element.d.ts.map
+# only generated for size check
+gene-list-element.bundled.js

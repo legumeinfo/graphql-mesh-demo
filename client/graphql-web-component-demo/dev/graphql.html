@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>GraphQL-JS Demo</title>
+    <!-- GraphQL -->
+    <script type="text/javascript" src="../graphql.js"></script>
+  </head>
+  <body>
+
+    <script type="text/javascript">
+
+      const uri = 'http://localhost:4000/';
+
+      const query = `
+query Genes($start: Int, $size: Int) {
+  genes(start: $start, size: $size) {
+    name
+    organism {
+      name
+      commonName
+      genus
+      species
+    }
+    geneFamily {
+      name
+    }
+  }
+}
+      `;
+      const variables = {start: 10, size: 25};
+
+      graphqlQuery(uri, query, variables)
+        .then(({data}) => console.log(data));
+
+    </script>
+  </body>
+</html>
